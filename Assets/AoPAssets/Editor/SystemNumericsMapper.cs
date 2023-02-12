@@ -4,7 +4,12 @@ namespace AoP.Editor
 {
     public sealed class SystemNumericsMapper
     {
-        
+
+        public UnityEngine.Vector2 ToUnity(Vector2 vector2)
+        {
+            return new UnityEngine.Vector2(vector2.X, vector2.Y);
+        }
+
         public UnityEngine.Vector3 ToUnity(Vector3 vector3)
         {
             return new UnityEngine.Vector3(vector3.X, vector3.Y, vector3.Z);
