@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.AssetImporters;
-using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -171,6 +170,7 @@ namespace AoP.Editor
         {
             string[] shadersNames =
             {
+                "HDRP/Lit",
                 "Universal Render Pipeline/Lit",
                 "Standard"
             };
