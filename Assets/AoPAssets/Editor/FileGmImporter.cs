@@ -12,11 +12,11 @@ namespace AoP.Editor
     {
         [SerializeField] private bool isMeshReadWrite = false;
         [SerializeField] private bool flipUvVertical = false;
-        [SerializeField] private string materialsExtractPath = null;
-        [SerializeField] private string animationFilePath = null;
-        [SerializeField] private bool hasAnimatedMesh = false;
-        [SerializeField] private bool hasLocators = false;
         [SerializeField] private bool createLocatorConstraint = true;
+        [SerializeField][HideInInspector] private string materialsExtractPath = null;
+        [SerializeField][HideInInspector] private string animationFilePath = null;
+        [SerializeField][HideInInspector] private bool hasAnimatedMesh = false;
+        [SerializeField][HideInInspector] private bool hasLocators = false;
 
         private readonly SystemNumericsMapper mapper = new();
 

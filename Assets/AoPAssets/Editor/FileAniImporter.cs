@@ -6,7 +6,6 @@ namespace AoP.Editor
     [ScriptedImporter(1, "ani")]
     public class FileAniImporter : ScriptedImporter
     {
-
         public override void OnImportAsset(AssetImportContext ctx)
         {
             FileAni fileAni = new(ctx.assetPath);

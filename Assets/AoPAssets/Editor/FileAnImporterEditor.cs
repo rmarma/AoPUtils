@@ -8,7 +8,6 @@ namespace AoP.Editor
     [CustomEditor(typeof(FileAnImporter))]
     public sealed class FileAnImporterEditor : ScriptedImporterEditor
     {
-
         private SerializedProperty fileAniPathProperty;
         private readonly GUIContent animationsInfoLabel = EditorGUIUtility.TrTextContent("Animations Info");
         private readonly GUIContent selectFileAniButton = EditorGUIUtility.TrTextContent(

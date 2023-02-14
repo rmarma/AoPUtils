@@ -7,7 +7,6 @@ namespace AoP.Editor
     [ScriptedImporter(1, "tga.tx")]
     public sealed class FileTgaTxImporter : ScriptedImporter
     {
-
         private const string FOUR_CC_DXT1 = "DXT1";
         private const string FOUR_CC_DXT3 = "DXT3";
         private const string FOUR_CC_DXT5 = "DXT5";
@@ -23,13 +22,10 @@ namespace AoP.Editor
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            FileTgaTx fileTgaTx = new(ctx.assetPath);
-            Texture2D texture2D = CreateTexture2D(fileTgaTx);
-            ctx.AddObjectToAsset("main", texture2D);
-            ctx.SetMainObject(texture2D);
+            CreateTexture2D(ctx, new FileTgaTx(ctx.assetPath));
         }
 
-        private Texture2D CreateTexture2D(FileTgaTx fileTgaTx)
+        private void CreateTexture2D(AssetImportContext ctx, FileTgaTx fileTgaTx)
         {
             int width = fileTgaTx.headerData.width;
             int height = fileTgaTx.headerData.height;
@@ -62,7 +58,8 @@ namespace AoP.Editor
             }
             texture2D.LoadRawTextureData(fileTgaTx.textureData.data);
             texture2D.Apply(false, !isReadWrite);
-            return texture2D;
+            ctx.AddObjectToAsset("main", texture2D);
+            ctx.SetMainObject(texture2D);
         }
 
         private GraphicsFormat GetGraphicsFormat(string fourCC)
@@ -83,7 +80,7 @@ namespace AoP.Editor
                     }
                 default:
                     {
-                        throw new System.ArgumentException(string.Format("Unknown fourCC: {0}", fourCC), "fourCC");
+                        throw new System.ArgumentException($"Unknown fourCC: {fourCC}", "fourCC");
                     }
             }
         }

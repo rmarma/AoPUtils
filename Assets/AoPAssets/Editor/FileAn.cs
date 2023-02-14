@@ -6,7 +6,6 @@ namespace AoP.Editor
 {
     public sealed class FileAn
     {
-
         public readonly string name;
         public readonly string nameWithoutExtension;
         public readonly string path;

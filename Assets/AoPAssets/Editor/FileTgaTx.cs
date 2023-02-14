@@ -6,7 +6,6 @@ namespace AoP.Editor
 {
     public sealed class FileTgaTx
     {
-
         public readonly HeaderData headerData;
         public readonly TextureData textureData;
 

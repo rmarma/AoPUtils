@@ -9,36 +9,26 @@ namespace AoP.Editor
     [ScriptedImporter(1, "an")]
     public sealed class FileAnImporter : ScriptedImporter
     {
-
-        [SerializeField] private string fileAniPath = null;
         [SerializeField] private string eventFunctionName = "OnAnimationEvent";
+        [SerializeField][HideInInspector] private string fileAniPath = null;
 
         private readonly SystemNumericsMapper mapper = new();
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            FileAn fileAn = new(ctx.assetPath);
-            GameObject mainGameObject = CreateMainGameObject(ctx, fileAn);
-            ctx.AddObjectToAsset("main", mainGameObject);
-            ctx.SetMainObject(mainGameObject);
+            CreateMainGameObject(ctx, new FileAn(ctx.assetPath));
         }
 
-        private GameObject CreateMainGameObject(AssetImportContext ctx, FileAn fileAn)
+        private void CreateMainGameObject(AssetImportContext ctx, FileAn fileAn)
         {
             GameObject mainGameObject = new(fileAn.nameWithoutExtension);
-            GameObject[] bones = CreateBones(fileAn, mainGameObject.transform);
-            Avatar avatar = CreateAvatar(mainGameObject, string.Empty);
-            ctx.AddObjectToAsset("avatar", avatar);
+            Transform mainTransform = mainGameObject.transform;
+            GameObject[] bones = CreateBones(fileAn, mainTransform);
+            Avatar avatar = CreateAvatar(ctx, mainGameObject, string.Empty);
             CreateAnimator(mainGameObject, avatar);
-            AnimationClip[] animationClips = CreateAnimationClips(fileAn, bones);
-            if (animationClips != null && animationClips.Length > 0)
-            {
-                foreach (var clip in animationClips)
-                {
-                    ctx.AddObjectToAsset("clip_" + clip.name, clip);
-                }
-            }
-            return mainGameObject;
+            CreateAnimationClips(ctx, fileAn, mainTransform, bones);
+            ctx.AddObjectToAsset("main", mainGameObject);
+            ctx.SetMainObject(mainGameObject);
         }
 
         private GameObject[] CreateBones(FileAn fileAn, Transform parent)
@@ -74,10 +64,14 @@ namespace AoP.Editor
             return bones;
         }
 
-        private Avatar CreateAvatar(GameObject mainGameObject, string rootMotionTransformName = "")
+        private Avatar CreateAvatar(
+            AssetImportContext ctx,
+            GameObject mainGameObject,
+            string rootMotionTransformName = "")
         {
             Avatar avatar = AvatarBuilder.BuildGenericAvatar(mainGameObject, rootMotionTransformName);
             avatar.name = mainGameObject.name + "Avatar";
+            ctx.AddObjectToAsset("avatar", avatar);
             return avatar;
         }
 
@@ -86,18 +80,27 @@ namespace AoP.Editor
             Animator animator = mainGameObject.AddComponent<Animator>();
             animator.avatar = avatar;
             animator.updateMode = AnimatorUpdateMode.Normal;
+            animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
             return animator;
         }
 
-        private AnimationClip[] CreateAnimationClips(FileAn fileAn, GameObject[] bones)
+        private void CreateAnimationClips(
+            AssetImportContext ctx,
+            FileAn fileAn,
+            Transform parent,
+            GameObject[] bones)
         {
+            if (bones == null)
+            {
+                throw new System.ArgumentException("Bones is null.", "bones");
+            }
             if (string.IsNullOrEmpty(fileAniPath))
             {
-                return null;
+                Debug.LogWarning("Failed to create animation clips. Select .ani file to load animation clips data.");
+                return;
             }
 
             FileAni fileAni = new(fileAniPath);
-            List<AnimationClip> clips = new();
             string clipNamePrefix = fileAn.nameWithoutExtension + "_";
             foreach (var data in fileAni.dataBySections)
             {
@@ -108,7 +111,7 @@ namespace AoP.Editor
                 var dataBySection = data.Value;
                 if (!dataBySection.ContainsKey("start_time") || !dataBySection.ContainsKey("end_time"))
                 {
-                    Debug.LogWarningFormat("Section [{0}] does not contain 'start_time' or 'end_time'.", data.Key);
+                    Debug.LogWarning($"Section [{data.Key}] does not contain 'start_time' or 'end_time'.");
                     continue;
                 }
                 int frameStart = int.Parse(dataBySection["start_time"][0]);
@@ -150,16 +153,12 @@ namespace AoP.Editor
                         curveRotationZ.AddKey(currentTime, rotation.z);
                         curveRotationW.AddKey(currentTime, -rotation.w);
                     }
-                    string path = bones[i].name;
+                    string path = AnimationUtility.CalculateTransformPath(bones[i].transform, parent);
                     if (i == 0)
                     {
                         clip.SetCurve(path, typeof(Transform), "localPosition.x", curvePositionX);
                         clip.SetCurve(path, typeof(Transform), "localPosition.y", curvePositionY);
                         clip.SetCurve(path, typeof(Transform), "localPosition.z", curvePositionZ);
-                    }
-                    else
-                    {
-                        path = AnimationUtility.CalculateTransformPath(bones[i].transform, bones[0].transform.parent);
                     }
                     clip.SetCurve(path, typeof(Transform), "localRotation.x", curveRotationX);
                     clip.SetCurve(path, typeof(Transform), "localRotation.y", curveRotationY);
@@ -171,12 +170,14 @@ namespace AoP.Editor
                 {
                     AnimationUtility.SetAnimationEvents(clip, animationEvents);
                 }
-                clips.Add(clip);
+                ctx.AddObjectToAsset("clip_" + clip.name, clip);
             }
-            return clips.ToArray();
         }
 
-        private AnimationEvent[] GetAnimationEvents(IDictionary<string, List<string>> dataBySection, int frameStart, float frameDuration)
+        private AnimationEvent[] GetAnimationEvents(
+            IDictionary<string, List<string>> dataBySection,
+            int frameStart,
+            float frameDuration)
         {
             List<AnimationEvent> animationEvents = new();
             if (dataBySection.ContainsKey("event"))
@@ -203,7 +204,7 @@ namespace AoP.Editor
                             }
                             else
                             {
-                                Debug.LogWarningFormat("Failed to get event frame: {0}", currentEvent);
+                                Debug.LogWarning($"Failed to get event frame: {currentEvent}");
                             }
                         }
                     }

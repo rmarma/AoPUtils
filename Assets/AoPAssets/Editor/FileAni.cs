@@ -7,7 +7,6 @@ namespace AoP.Editor
 {
     public sealed class FileAni
     {
-
         public readonly IDictionary<string, IDictionary<string, List<string>>> dataBySections;
 
         public FileAni(string path)
@@ -100,13 +99,13 @@ namespace AoP.Editor
             {
                 if (!string.IsNullOrEmpty(entry.Key))
                 {
-                    sb.AppendLine(string.Format("[{0}]", entry.Key));
+                    sb.AppendLine($"[{entry.Key}]");
                 }
                 foreach (var paramValue in entry.Value)
                 {
                     foreach (string value in paramValue.Value)
                     {
-                        sb.AppendLine(string.Format("{0} = {1}", paramValue.Key, value));
+                        sb.AppendLine($"{paramValue.Key} = {value}");
                     }
                 }
                 sb.AppendLine();

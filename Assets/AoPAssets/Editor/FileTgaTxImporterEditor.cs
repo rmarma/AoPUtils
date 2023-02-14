@@ -7,7 +7,6 @@ namespace AoP.Editor
     [CustomEditor(typeof(FileTgaTxImporter))]
     public sealed class FileTgaTxImporterEditor : ScriptedImporterEditor
     {
-
         private SerializedProperty isReadWriteProperty;
         private readonly GUIContent isReadWriteGUIContent = EditorGUIUtility.TrTextContent(
             text: "Read/Write",
