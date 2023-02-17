@@ -117,6 +117,14 @@ namespace AoP.Editor
                 int frameStart = int.Parse(dataBySection["start_time"][0]);
                 int frameEnd = int.Parse(dataBySection["end_time"][0]);
                 float frameDuration = 1.0F / fileAn.headerData.fps;
+                bool isLoop = false;
+                if (dataBySection.ContainsKey("loop"))
+                {
+                    if (bool.TryParse(dataBySection["loop"][0], out bool loop))
+                    {
+                        isLoop = loop;
+                    }
+                }
                 AnimationClip clip = new()
                 {
                     name = clipNamePrefix + data.Key,
@@ -165,6 +173,14 @@ namespace AoP.Editor
                     clip.SetCurve(path, typeof(Transform), "localRotation.z", curveRotationZ);
                     clip.SetCurve(path, typeof(Transform), "localRotation.w", curveRotationW);
                 }
+                AnimationClipSettings clipSettings = new()
+                {
+                    loopTime = isLoop,
+                    loopBlend = isLoop,
+                    startTime = 0.0F,
+                    stopTime = (frameEnd - frameStart) * frameDuration
+                };
+                AnimationUtility.SetAnimationClipSettings(clip, clipSettings);
                 AnimationEvent[] animationEvents = GetAnimationEvents(dataBySection, frameStart, frameDuration);
                 if (animationEvents != null && animationEvents.Length > 0)
                 {
