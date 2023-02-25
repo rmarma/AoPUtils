@@ -14,9 +14,34 @@ namespace AoP.Editor
             return new UnityEngine.Vector3(vector3.X, vector3.Y, vector3.Z);
         }
 
+        public UnityEngine.Vector3[] ToUnity(Vector3[] vectors3)
+        {
+            UnityEngine.Vector3[] result = new UnityEngine.Vector3[vectors3.Length];
+            for (int i = 0; i < result.Length; ++i)
+            {
+                result[i] = ToUnity(vectors3[i]);
+            }
+            return result;
+        }
+
         public UnityEngine.Quaternion ToUnity(Quaternion quaternion)
         {
             return new UnityEngine.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+        }
+
+        public UnityEngine.Quaternion[,] ToUnity(Quaternion[,] quaternions)
+        {
+            int rows = quaternions.GetLength(0);
+            int columns = quaternions.GetLength(1);
+            UnityEngine.Quaternion[,] result = new UnityEngine.Quaternion[rows, columns];
+            for (int i = 0; i < rows; ++i)
+            {
+                for (int j = 0; j < columns; ++j)
+                {
+                    result[i, j] = ToUnity(quaternions[i, j]);
+                }
+            }
+            return result;
         }
 
         public UnityEngine.Matrix4x4 ToUnity(Matrix4x4 matrix4x4)

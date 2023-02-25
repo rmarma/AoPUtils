@@ -61,22 +61,22 @@ namespace AoP.Editor
 
         public sealed class FramesData
         {
-            public readonly Vector3[] rootBonePositionByFrames;
-            public readonly Quaternion[,] boneRotationByFrames;
+            public readonly Vector3[] rootBonePositions;
+            public readonly Quaternion[,] bonesRotations;
 
-            public FramesData(BinaryReader br, int framesCount, int jointsCount)
+            public FramesData(BinaryReader br, int framesCount, int bonesCount)
             {
-                rootBonePositionByFrames = new Vector3[framesCount];
+                rootBonePositions = new Vector3[framesCount];
                 for (int i = 0; i < framesCount; ++i)
                 {
-                    rootBonePositionByFrames[i] = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+                    rootBonePositions[i] = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                 }
-                boneRotationByFrames = new Quaternion[jointsCount, framesCount];
-                for (int i = 0; i < jointsCount; ++i)
+                bonesRotations = new Quaternion[bonesCount, framesCount];
+                for (int i = 0; i < bonesCount; ++i)
                 {
                     for (int j = 0; j < framesCount; ++j)
                     {
-                        boneRotationByFrames[i, j] = new Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+                        bonesRotations[i, j] = new Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                     }
                 }
             }

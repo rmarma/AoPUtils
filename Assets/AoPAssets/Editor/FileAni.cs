@@ -7,11 +7,11 @@ namespace AoP.Editor
 {
     public sealed class FileAni
     {
-        public readonly IDictionary<string, IDictionary<string, List<string>>> dataBySections;
+        public readonly IDictionary<string, IDictionary<string, IList<string>>> dataBySections;
 
         public FileAni(string path)
         {
-            dataBySections = new Dictionary<string, IDictionary<string, List<string>>>();
+            dataBySections = new Dictionary<string, IDictionary<string, IList<string>>>();
             string currentSection = string.Empty;
             foreach (string line in File.ReadAllLines(path, Encoding.UTF8).Select(x => CleanLine(x)))
             {
@@ -25,7 +25,7 @@ namespace AoP.Editor
                 {
                     if (!dataBySections.ContainsKey(currentSection))
                     {
-                        dataBySections[currentSection] = new Dictionary<string, List<string>>();
+                        dataBySections[currentSection] = new Dictionary<string, IList<string>>();
                     }
                     var currentSectionData = dataBySections[currentSection];
                     if (!currentSectionData.ContainsKey(pair.param))
