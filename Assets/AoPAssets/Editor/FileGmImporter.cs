@@ -216,7 +216,7 @@ namespace AoP.Editor
                 }
                 Vector3 localPosition = mapper.ToUnity(fileAn.bonesData.startPositions[i]);
                 localPosition.x *= -1;
-                Quaternion localRotation = mapper.ToUnity(fileAn.framesData.boneRotationByFrames[i, 0]);
+                Quaternion localRotation = mapper.ToUnity(fileAn.framesData.bonesRotations[i, 0]);
                 localRotation.x *= -1;
                 localRotation.w *= -1;
                 bonesTransforms[i].localPosition = localPosition;
